@@ -1,4 +1,4 @@
-import React, { cloneElement } from 'react';
+import * as React from 'react';
 import { polyfill } from 'react-lifecycles-compat';
 import RcTooltip from 'rc-tooltip';
 import classNames from 'classnames';
@@ -59,15 +59,23 @@ export interface AbstractTooltipProps {
   children?: React.ReactNode;
   // align is a more higher api
   align?: TooltipAlignConfig;
+  /** Internal. Hide tooltip when hidden. This will be renamed in future. */
   destroyTooltipOnHide?: boolean;
 }
 
 export type RenderFunction = () => React.ReactNode;
 
-export interface TooltipProps extends AbstractTooltipProps {
+interface TooltipPropsWithOverlay extends AbstractTooltipProps {
   title?: React.ReactNode | RenderFunction;
+  overlay: React.ReactNode | RenderFunction;
+}
+
+interface TooltipPropsWithTitle extends AbstractTooltipProps {
+  title: React.ReactNode | RenderFunction;
   overlay?: React.ReactNode | RenderFunction;
 }
+
+export declare type TooltipProps = TooltipPropsWithTitle | TooltipPropsWithOverlay;
 
 const splitObject = (obj: any, keys: string[]) => {
   const picked: any = {};
@@ -115,7 +123,7 @@ function getDisabledCompatibleChildren(element: React.ReactElement<any>) {
       ...omitted,
       pointerEvents: 'none',
     };
-    const child = cloneElement(element, {
+    const child = React.cloneElement(element, {
       style: buttonStyle,
       className: null,
     });
@@ -263,7 +271,7 @@ class Tooltip extends React.Component<TooltipProps, any> {
         onVisibleChange={this.onVisibleChange}
         onPopupAlign={this.onPopupAlign}
       >
-        {visible ? cloneElement(child, { className: childCls }) : child}
+        {visible ? React.cloneElement(child, { className: childCls }) : child}
       </RcTooltip>
     );
   };
